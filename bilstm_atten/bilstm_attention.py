@@ -36,15 +36,14 @@ class C2ResRNN(nn.Module):
         self.embedding = nn.Embedding(num_embeddings=vocab_size,
                                       embedding_dim=config.embedding_dim)
         self.cnn_dim = 100
-        self.window_sizes = [3, 5]
+        self.window_sizes = [3, 5, 7]
         self.embedding_dim = config.embedding_dim
-        self.convs = nn.ModuleList([
-            nn.Sequential(nn.Conv1d(in_channels=self.embedding_dim,
-                                    out_channels=self.cnn_dim,
-                                    kernel_size=h,
-                                    padding=h // 2),
-                          nn.ReLU())
-            for h in self.window_sizes])
+        self.convs = nn.ModuleList([nn.Sequential(nn.Conv1d(in_channels=self.embedding_dim,
+                                                            out_channels=self.cnn_dim,
+                                                            kernel_size=h,
+                                                            padding=h // 2),
+                                                  nn.ReLU())
+                                    for h in self.window_sizes])
         self.bilstm1 = nn.LSTM(input_size=config.embedding_dim + len(self.window_sizes) * config.cnn_dim,
                                hidden_size=config.hidden_size,
                                num_layers=1,
